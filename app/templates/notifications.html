@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notifications</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Notifications</h1>
+        <div id="notifications" style="max-height: 400px; overflow-y: scroll;"></div>
+    </div>
+
+    <script>
+        var socket = io();
+
+        socket.on('notification', function(msg) {
+            var notifications = document.getElementById('notifications');
+            var notificationElement = document.createElement('div');
+            notificationElement.textContent = msg;
+            notifications.appendChild(notificationElement);
+        });
+    </script>
+</body>
+</html>

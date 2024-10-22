@@ -1,0 +1,29 @@
+<!-- /Users/carlosventura/Mentor/educacion-singular-platform/app/templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mentor{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('virtual_classrooms') }}">Virtual Classrooms</a></li>
+                <li><a href="{{ url_for('gamification') }}">Gamification</a></li>
+                <li><a href="{{ url_for('simulators') }}">Simulators</a></li>
+                <li><a href="{{ url_for('vr') }}">VR</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 Mentor. All rights reserved.</p>
+    </footer>
+</body>
+</html>

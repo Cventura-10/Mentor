@@ -1,0 +1,34 @@
+<!-- Updated templates/dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <p>Average Score: </p>
+    <p>Total Students: </p>
+    <div id="chat">
+        <input type="text" id="message_input" placeholder="Type your message">
+        <button onclick="sendMessage()">Send</button>
+        <ul id="chat_messages"></ul>
+    </div>
+
+    <script>
+        var socket = io();
+        socket.emit('join', {room: 'dashboard', username: '{{ current_user.username }}'});
+
+        socket.on('message', function(data) {
+            var li = document.createElement('li');
+            li.appendChild(document.createTextNode(data.username + ': ' + data.msg));
+            document.getElementById('chat_messages').appendChild(li);
+        });
+
+        function sendMessage() {
+            var message = document.getElementById('message_input').value;
+            socket.emit('send_message', {room: 'dashboard', username: '{{ current_user.username }}', msg: message});
+        }
+    </script>
+</body>
+</html>

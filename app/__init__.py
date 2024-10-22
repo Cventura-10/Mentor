@@ -1,3 +1,4 @@
+# app/__init__.py
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -11,11 +12,14 @@ bcrypt = Bcrypt()
 login_manager = LoginManager()
 socketio = SocketIO()
 
-def create_app():
+def create_app(config_class=None):
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_default_secret_key')
-    db_uri = os.getenv('DATABASE_URL') or 'sqlite:///mentor.db'
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+    if config_class:
+        app.config.from_object(config_class)
+    else:
+        app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_default_secret_key')
+        db_uri = os.getenv('DATABASE_URL') or 'sqlite:///mentor.db'
+        app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 
     # Initialize app with extensions
     db.init_app(app)

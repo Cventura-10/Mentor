@@ -5,6 +5,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from app import db, bcrypt
 from app.models import User
 from app.forms import LoginForm, RegistrationForm
+from hmac import compare_digest
 
 main = Blueprint('main', __name__)
 
@@ -101,7 +102,7 @@ def api_login():
     form = LoginForm(request.json)
     if form.validate():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
+        if user and compare_digest(user.password, form.password.data):
             return jsonify({'message': 'Login successful'}), 200
     return jsonify({'message': 'Invalid credentials'}), 400
 

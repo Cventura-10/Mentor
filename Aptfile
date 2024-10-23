@@ -3,3 +3,4 @@ build-essential
 libfreetype6-dev
 libpng-dev
 libffi-dev
+python3-matplotlib

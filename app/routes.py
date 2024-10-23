@@ -16,7 +16,7 @@ def home():
     form = LoginForm()
     return render_template('home.html', form=form)
 
-@main.route('/login', methods=['GET', 'POST']) 
+@main.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))

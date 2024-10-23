@@ -11,12 +11,12 @@ main = Blueprint('main', __name__)
 
 JITSI_TOKEN = os.environ.get('JITSI_TOKEN', 'your_default_token')
 
-@main.route('/')
+@main.route('/', methods=['GET'])
 def home():
     form = LoginForm()
     return render_template('home.html', form=form)
 
-@main.route('/login', methods=['GET', 'POST'])
+@main.route('/login', methods=['GET', 'POST']) 
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
@@ -45,17 +45,17 @@ def register():
         return redirect(url_for('main.login'))
     return render_template('register.html', title='Register', form=form)
 
-@main.route('/dashboard')
+@main.route('/dashboard', methods=['GET'])
 @login_required
 def dashboard():
     return render_template('dashboard.html', title='Dashboard')
 
-@main.route('/logout')
+@main.route('/logout', methods=['GET'])
 def logout():
     logout_user()
     return redirect(url_for('main.login'))
 
-@main.route('/create-meeting', methods=['POST'])
+@main.route('/create-meeting', methods=['GET', 'POST'])
 @login_required
 def create_meeting():
     try:
@@ -75,12 +75,12 @@ def create_meeting():
         flash('Failed to create meeting', 'danger')
         return redirect(url_for('main.dashboard'))
 
-@main.route('/meeting/<string:meeting_id>')
+@main.route('/meeting/<string:meeting_id>', methods=['GET'])
 @login_required
 def meeting(meeting_id):
     return render_template('meeting.html', title='Meeting', meeting_id=meeting_id)
 
-@main.route('/user/<int:user_id>')
+@main.route('/user/<int:user_id>', methods=['GET'])
 @login_required
 def user_profile(user_id):
     user = User.query.get_or_404(user_id)
@@ -118,6 +118,4 @@ def api_profile():
 @login_required
 def api_create_meeting():
     meeting_data = request.get_json()
-    # Implement logic to create a meeting using the Jitsi Meet API
-    # Example response
     return jsonify({'message': 'Meeting created'}), 201

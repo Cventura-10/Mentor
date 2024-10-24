@@ -1,1 +1,1 @@
-web: gunicorn --worker-class gevent -w 1 --log-file=- run:app
+web: gunicorn --worker-class gevent -w 4 app:app

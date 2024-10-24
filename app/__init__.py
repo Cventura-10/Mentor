@@ -27,3 +27,5 @@ def create_app():
     app.register_blueprint(errors)
 
     return app
+
+app = create_app()

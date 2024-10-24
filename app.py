@@ -40,16 +40,7 @@ def create_app():
         return User.query.get(int(user_id))
 
     # Register blueprints
-    from app.main.routes import main
+    from app.routes import main
     app.register_blueprint(main)
-
-    from app.users.routes import users
-    app.register_blueprint(users)
-
-    from app.errors.handlers import errors
-    app.register_blueprint(errors)
-
-    from app.reporting import reporting
-    app.register_blueprint(reporting, url_prefix='/reporting')
 
     return app

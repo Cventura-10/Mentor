@@ -13,8 +13,8 @@ JITSI_TOKEN = os.environ.get('JITSI_TOKEN', 'your_default_token')
 
 @main.route('/', methods=['GET'])
 def home():
-    form = LoginForm()
-    return render_template('home.html', form=form)
+    print("Home route executed")
+    return render_template('index.html')
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
@@ -102,20 +102,7 @@ def api_login():
     form = LoginForm(request.json)
     if form.validate():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and compare_digest(user.password, form.password.data):
-            return jsonify({'message': 'Login successful'}), 200
-    return jsonify({'message': 'Invalid credentials'}), 400
-
-@main.route('/api/profile', methods=['GET'])
-@login_required
-def api_profile():
-    return jsonify({
-        'username': current_user.username,
-        'email': current_user.email
-    }), 200
-
-@main.route('/api/create_meeting', methods=['POST'])
-@login_required
-def api_create_meeting():
-    meeting_data = request.get_json()
-    return jsonify({'message': 'Meeting created'}), 201
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user)
+            return jsonify({'message': 'User logged in'}), 200
+    return jsonify({'message': 'Invalid credentials'}), 401

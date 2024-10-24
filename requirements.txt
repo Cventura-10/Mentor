@@ -49,4 +49,4 @@ greenlet==2.0.3
 gevent==2.3.0
 dnspython==2.7.0
 eventlet==0.39.0
-greenlet==2.0.2
+greenlet==3.0.0

@@ -1,1 +1,1 @@
-web: python path/to/your/app.py
+web: python app.py

@@ -1,1 +1,1 @@
-web: python app.py
+web: python educacion-singular-platform/app.py

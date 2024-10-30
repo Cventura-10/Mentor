@@ -56,3 +56,4 @@ zope.interface==7.1.1         # No updates required
 
 eventlet==0.33.3              # Optional: Use with Flask-SocketIO for async handling
 python-dotenv                 # Automatically loads environment variables from .env files
+gunicorn==20.1.0

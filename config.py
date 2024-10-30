@@ -1,14 +1,8 @@
-# config.py
-
 import os
-
-basedir = os.path.abspath(os.path.dirname(__file__))
+import secrets
 
 class Config:
-    DEBUG = True
-    SECRET_KEY = 'secret_key'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'database.db')
-
-class TestConfig(Config):
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # Use an in-memory SQLite database for testing
+    # Generate a random secret key if not set in environment variables
+    SECRET_KEY = os.getenv('SECRET_KEY', secrets.token_hex(24))
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///mentor.db')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False

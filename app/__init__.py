@@ -15,13 +15,11 @@ def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_default_secret_key')
 
-    # Fix Heroku postgres connection string if needed
-    db_uri = os.getenv('DATABASE_URL')
-    if db_uri and db_uri.startswith('postgres://'):
+    # Set up the database URI
+    db_uri = os.getenv('DATABASE_URL', 'sqlite:///mentor.db')
+    if db_uri.startswith('postgres://'):
         db_uri = db_uri.replace('postgres://', 'postgresql://')
-    else:
-        db_uri = 'sqlite:///mentor.db'
-
+    
     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

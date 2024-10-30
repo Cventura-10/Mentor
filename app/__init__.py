@@ -17,9 +17,11 @@ def create_app():
 
     # Set up the database URI
     db_uri = os.getenv('DATABASE_URL', 'sqlite:///mentor.db')
+
+    # Fix for Heroku Postgres URI scheme
     if db_uri.startswith('postgres://'):
         db_uri = db_uri.replace('postgres://', 'postgresql://')
-    
+
     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -30,7 +32,7 @@ def create_app():
     socketio.init_app(app)
 
     # User loader function for Flask-Login
-    from app.models import User  # Import models here, after db is initialized
+    from app.models import User  # Import models after initializing db
 
     @login_manager.user_loader
     def load_user(user_id):

@@ -4,12 +4,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_socketio import SocketIO
+from flask_migrate import Migrate  # Import Flask-Migrate
 
 # Initialize extensions globally
 db = SQLAlchemy()
 bcrypt = Bcrypt()  # Ensure this is initialized globally
 login_manager = LoginManager()
 socketio = SocketIO(cors_allowed_origins="*")
+migrate = Migrate()  # Initialize Flask-Migrate globally
 
 def create_app():
     """Application factory to create and configure the Flask app."""
@@ -20,7 +22,9 @@ def create_app():
 
     # Configuration
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(app.instance_path, 'mentor.db')}"
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+        'DATABASE_URL', f"sqlite:///{os.path.join(app.instance_path, 'mentor.db')}"
+    )
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Initialize extensions with the app
@@ -28,6 +32,7 @@ def create_app():
     bcrypt.init_app(app)  # This ensures bcrypt is initialized with the app
     login_manager.init_app(app)
     socketio.init_app(app)
+    migrate.init_app(app, db)  # Initialize Flask-Migrate with the app and database
 
     # Flask-Login configuration
     login_manager.login_view = 'main.login'
@@ -43,16 +48,6 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
-
-    # Database creation if not exists
-    db_path = os.path.join(app.instance_path, 'mentor.db')
-    with app.app_context():
-        if not os.path.exists(db_path):
-            try:
-                db.create_all()
-                print(f"Database created at {db_path}.")
-            except Exception as e:
-                print(f"Error creating database: {e}")
 
     # Flask shell context for easier debugging
     @app.shell_context_processor

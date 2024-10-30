@@ -10,7 +10,7 @@ dominate==2.9.1
 email-validator==2.1.1  # Ensure correct version
 Flask==3.0.3
 Flask-Bcrypt==1.0.1
-Flask-Bootstrap==3.3.7.2  # Updated to the latest stable version
+Flask-Bootstrap==3.3.7.1  # Updated to the latest stable version
 Flask-Login==0.6.3
 Flask-SocketIO==5.4.1
 Flask-SQLAlchemy==3.1.1

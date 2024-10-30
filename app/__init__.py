@@ -1,4 +1,5 @@
-import os  # Make sure to import os at the top
+import os  # Ensure os is imported
+from urllib.parse import urlparse, urlunparse  # For parsing DATABASE_URL
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -8,7 +9,7 @@ from flask_migrate import Migrate  # Import Flask-Migrate
 
 # Initialize extensions globally
 db = SQLAlchemy()
-bcrypt = Bcrypt()  # Ensure this is initialized globally
+bcrypt = Bcrypt()  # Ensure bcrypt is initialized globally
 login_manager = LoginManager()
 socketio = SocketIO(cors_allowed_origins="*")
 migrate = Migrate()  # Initialize Flask-Migrate globally
@@ -18,21 +19,25 @@ def create_app():
     app = Flask(__name__)
 
     # Ensure the instance folder exists
-    os.makedirs(app.instance_path, exist_ok=True)  # Now this will work correctly
+    os.makedirs(app.instance_path, exist_ok=True)
 
     # Configuration
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-        'DATABASE_URL', f"sqlite:///{os.path.join(app.instance_path, 'mentor.db')}"
-    )
+
+    # Handle DATABASE_URL for PostgreSQL compatibility
+    uri = os.getenv('DATABASE_URL', f"sqlite:///{os.path.join(app.instance_path, 'mentor.db')}")
+    if uri.startswith("postgres://"):
+        uri = uri.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = uri
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Initialize extensions with the app
     db.init_app(app)
-    bcrypt.init_app(app)  # This ensures bcrypt is initialized with the app
+    bcrypt.init_app(app)
     login_manager.init_app(app)
     socketio.init_app(app)
-    migrate.init_app(app, db)  # Initialize Flask-Migrate with the app and database
+    migrate.init_app(app, db)
 
     # Flask-Login configuration
     login_manager.login_view = 'main.login'

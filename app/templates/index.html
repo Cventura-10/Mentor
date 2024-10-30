@@ -1,20 +1,10 @@
-<!-- /Users/carlosventura/Mentor/educacion-singular-platform/app/templates/base.html -->
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>{% block title %}{% endblock %}</title>
-  </head>
-  <body>
-    <nav>
-      <!-- Navigation menu -->
-      <ul>
-        <li><a href="{{ url_for('main.home') }}">Home</a></li>
-        <li><a href="{{ url_for('main.login') }}">Login</a></li>
-        <li><a href="{{ url_for('main.register') }}">Register</a></li>
-      </ul>
-    </nav>
-    <div id="content">
-      {% block content %}{% endblock %}
-    </div>
-  </body>
-</html>
+<!-- /Users/carlosventura/Mentor/educacion-singular-platform/app/templates/index.html -->
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1>Welcome to Mentor Platform</h1>
+<p>This is the home page. You can <a href="{{ url_for('main.login') }}">log in</a> or 
+<a href="{{ url_for('main.register') }}">register</a> to continue.</p>
+{% endblock %}

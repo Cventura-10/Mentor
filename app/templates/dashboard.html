@@ -1,34 +1,43 @@
-<!-- Updated templates/dashboard.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dashboard</title>
-    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-</head>
-<body>
-    <h1>Dashboard</h1>
-    <p>Average Score: </p>
-    <p>Total Students: </p>
-    <div id="chat">
-        <input type="text" id="message_input" placeholder="Type your message">
-        <button onclick="sendMessage()">Send</button>
-        <ul id="chat_messages"></ul>
-    </div>
+{% extends "base.html" %}
 
-    <script>
-        var socket = io();
-        socket.emit('join', {room: 'dashboard', username: '{{ current_user.username }}'});
+{% block title %}Dashboard{% endblock %}
 
-        socket.on('message', function(data) {
-            var li = document.createElement('li');
-            li.appendChild(document.createTextNode(data.username + ': ' + data.msg));
-            document.getElementById('chat_messages').appendChild(li);
+{% block content %}
+<h1>Dashboard</h1>
+<p>Welcome, {{ current_user.username }}!</p>
+
+<p>Average Score: <span id="avg_score">0</span></p>
+<p>Total Students: <span id="total_students">0</span></p>
+
+<div id="chat">
+    <input type="text" id="message_input" placeholder="Type your message">
+    <button onclick="sendMessage()">Send</button>
+    <ul id="chat_messages"></ul>
+</div>
+
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<script>
+    var socket = io();
+
+    // Join the dashboard room
+    socket.emit('join', { room: 'dashboard', username: '{{ current_user.username }}' });
+
+    // Receive messages from the server
+    socket.on('message', function(data) {
+        var li = document.createElement('li');
+        li.appendChild(document.createTextNode(`${data.username}: ${data.msg}`));
+        document.getElementById('chat_messages').appendChild(li);
+    });
+
+    // Send a message to the server
+    function sendMessage() {
+        var message = document.getElementById('message_input').value;
+        socket.emit('send_message', {
+            room: 'dashboard',
+            username: '{{ current_user.username }}',
+            msg: message
         });
-
-        function sendMessage() {
-            var message = document.getElementById('message_input').value;
-            socket.emit('send_message', {room: 'dashboard', username: '{{ current_user.username }}', msg: message});
-        }
-    </script>
-</body>
-</html>
+        document.getElementById('message_input').value = '';  // Clear the input field
+    }
+</script>
+{% endblock %}

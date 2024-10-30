@@ -1,13 +1,14 @@
-from flask_socketio import emit, join_room, leave_room
+from flask_socketio import SocketIO, emit, join_room, leave_room
 from app import socketio
 
 @socketio.on('join')
 def handle_join(data):
+    username = data['username']
     room = data['room']
     join_room(room)
-    emit('status', {'msg': f'{data["username"]} has entered the room.'}, room=room)
+    emit('message', {'username': 'System', 'msg': f'{username} has joined the room.'}, room=room)
 
 @socketio.on('send_message')
-def handle_message(data):
+def handle_send_message(data):
     room = data['room']
     emit('message', {'username': data['username'], 'msg': data['msg']}, room=room)

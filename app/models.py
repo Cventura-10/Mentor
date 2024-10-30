@@ -1,15 +1,21 @@
-from . import db
+# app/models.py
+from flask_login import UserMixin
+from app import db, bcrypt
 
-class User(db.Model):
+class User(UserMixin, db.Model):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), nullable=False, unique=True)
-    email = db.Column(db.String(120), nullable=False, unique=True)
-    password = db.Column(db.String(60), nullable=False)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
 
-class Meeting(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    def set_password(self, password):
+        """Hash and set the user's password."""
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-class Performance(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    meeting_id = db.Column(db.Integer, db.ForeignKey('meeting.id'), nullable=False)
+    def check_password(self, password):
+        """Check the user's password."""
+        return bcrypt.check_password_hash(self.password, password)
+
+    def __repr__(self):
+        return f"User('{self.username}', '{self.email}')"

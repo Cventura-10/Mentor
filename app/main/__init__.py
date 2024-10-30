@@ -1,5 +1,7 @@
 from flask import Blueprint
 
+# Define the Blueprint
 main = Blueprint('main', __name__)
 
-from . import routes
+# Import routes to avoid circular imports
+from app.main import routes

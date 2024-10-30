@@ -1,18 +1,17 @@
-import os  # Ensure os is imported
-from urllib.parse import urlparse, urlunparse  # For parsing DATABASE_URL
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_socketio import SocketIO
-from flask_migrate import Migrate  # Import Flask-Migrate
+from flask_migrate import Migrate
 
 # Initialize extensions globally
 db = SQLAlchemy()
-bcrypt = Bcrypt()  # Ensure bcrypt is initialized globally
+bcrypt = Bcrypt()
 login_manager = LoginManager()
 socketio = SocketIO(cors_allowed_origins="*")
-migrate = Migrate()  # Initialize Flask-Migrate globally
+migrate = Migrate()
 
 def create_app():
     """Application factory to create and configure the Flask app."""
@@ -29,7 +28,6 @@ def create_app():
     if uri.startswith("postgres://"):
         uri = uri.replace("postgres://", "postgresql://", 1)
     app.config['SQLALCHEMY_DATABASE_URI'] = uri
-
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Initialize extensions with the app
@@ -40,12 +38,15 @@ def create_app():
     migrate.init_app(app, db)
 
     # Flask-Login configuration
-    login_manager.login_view = 'main.login'
+    login_manager.login_view = 'users.login'
     login_manager.login_message_category = 'info'
 
-    # Import and register blueprints
+    # Register blueprints
     from app.main.routes import main as main_blueprint
     app.register_blueprint(main_blueprint)
+
+    from app.users.routes import users as users_blueprint
+    app.register_blueprint(users_blueprint, url_prefix='/users')
 
     # User loader for Flask-Login
     from app.models import User

@@ -1,12 +1,16 @@
+<!-- virtual_classrooms.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtual Classrooms</title>
 </head>
 <body>
-    <h1>Welcome to the Virtual Classrooms</h1>
-    <!-- Add your content here -->
+    <h1>Virtual Classrooms</h1>
+    <p>Join a live session or start a new virtual classroom.</p>
+    <a href="{{ url_for('main.create_meeting') }}">Start a New Classroom</a>
+    <div id="classroom-list">
+        <!-- List of available classrooms or meetings -->
+    </div>
 </body>
 </html>

@@ -1,3 +1,4 @@
+# app/models.py
 from app import db, bcrypt
 from flask_login import UserMixin
 
@@ -14,6 +15,3 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
-
-    def __repr__(self):
-        return f"<User('{self.username}', '{self.email}')>"

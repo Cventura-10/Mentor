@@ -1,53 +1,38 @@
+# env.py
 import logging
 from logging.config import fileConfig
 from flask import current_app
 from alembic import context
-from app import db  # Ensure this imports the SQLAlchemy instance
-from app.models import User  # Import your models here to ensure they are recognized
+from app import db  # Import db instance
+from app.models import *  # Import all models
 
-# This is the Alembic Config object, which provides access to the values within the .ini file in use.
 config = context.config
-
-# Set up logging configurations from the config file
 fileConfig(config.config_file_name)
 logger = logging.getLogger('alembic.env')
 
-# Set target_metadata for Alembic to detect model changes
-target_metadata = db.metadata  # Use the main metadata for all models
+target_metadata = db.metadata
 
 def get_engine():
     try:
-        # Retrieve the engine for different Flask-SQLAlchemy versions
         return current_app.extensions['migrate'].db.get_engine()
-    except TypeError:
+    except (TypeError, AttributeError):
         return current_app.extensions['migrate'].db.engine
 
-# Configure Alembic with the SQLAlchemy URL from the app’s config
-config.set_main_option(
-    'sqlalchemy.url', str(get_engine().url).replace('%', '%%')
-)
-target_db = current_app.extensions['migrate'].db
+def get_engine_url():
+    try:
+        return get_engine().url.render_as_string(hide_password=False).replace('%', '%%')
+    except AttributeError:
+        return str(get_engine().url).replace('%', '%%')
 
-def get_metadata():
-    # Fetch metadata; compatible with multiple metadata setups if used
-    if hasattr(target_db, 'metadatas'):
-        return target_db.metadatas[None]
-    return target_db.metadata
+config.set_main_option('sqlalchemy.url', get_engine_url())
 
 def run_migrations_offline():
-    """Run migrations in 'offline' mode, without a DBAPI."""
     url = config.get_main_option("sqlalchemy.url")
-    context.configure(
-        url=url, target_metadata=get_metadata(), literal_binds=True
-    )
-
+    context.configure(url=url, target_metadata=target_metadata, literal_binds=True)
     with context.begin_transaction():
         context.run_migrations()
 
 def run_migrations_online():
-    """Run migrations in 'online' mode, connecting directly to the database."""
-    
-    # Callback to avoid migrations if no schema changes detected
     def process_revision_directives(context, revision, directives):
         if getattr(config.cmd_opts, 'autogenerate', False):
             script = directives[0]
@@ -56,19 +41,11 @@ def run_migrations_online():
                 logger.info('No changes in schema detected.')
 
     connectable = get_engine()
-
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection,
-            target_metadata=get_metadata(),
-            process_revision_directives=process_revision_directives,
-            **current_app.extensions['migrate'].configure_args
-        )
-
+        context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():
             context.run_migrations()
 
-# Execute migrations depending on mode
 if context.is_offline_mode():
     run_migrations_offline()
 else:

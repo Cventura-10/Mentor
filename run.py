@@ -1,3 +1,5 @@
+# run.py
+
 import os
 from app import create_app, socketio  # Assuming 'create_app' and 'socketio' are in 'app' module
 
@@ -6,6 +8,5 @@ app = create_app()
 
 if __name__ == "__main__":
     # Use socketio.run to start the app, ensuring compatibility with Flask-SocketIO
-    # Run with dynamic port or default to 5000
     port = int(os.getenv("PORT", 5000))
     socketio.run(app, host="0.0.0.0", port=port)

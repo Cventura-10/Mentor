@@ -2,7 +2,7 @@ import os
 import requests
 from flask import (
     Blueprint, render_template, url_for, flash, redirect, 
-    request, session, jsonify, abort
+    request, session, jsonify, abort, current_app
 )
 from flask_login import login_user, current_user, logout_user, login_required
 from app import db, bcrypt
@@ -13,7 +13,7 @@ from functools import wraps
 main = Blueprint('main', __name__, template_folder='templates')
 JITSI_TOKEN = os.getenv('JITSI_TOKEN', 'your_default_token')
 
-# Role-based access control
+# Role-based access control decorator
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -40,7 +40,7 @@ def login():
             next_page = request.args.get('next') or url_for('main.dashboard')
             return redirect(next_page)
         flash('Invalid email or password', 'danger')
-    return render_template('login.html', title='Login', form=form)
+    return render_template('login.html', form=form)
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
@@ -58,14 +58,14 @@ def register():
             return redirect(url_for('main.login'))
         except Exception as e:
             db.session.rollback()
+            current_app.logger.error(f"Registration error: {e}")
             flash('Registration failed. Please try again.', 'danger')
-            print(f"Registration error: {e}")
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', form=form)
 
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', title='Dashboard')
+    return render_template('dashboard.html')
 
 @main.route('/logout')
 @login_required
@@ -75,10 +75,14 @@ def logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('main.login'))
 
-@main.route('/create-meeting', methods=['POST'])
+@main.route('/create-meeting', methods=['GET', 'POST'])
 @login_required
 def create_meeting():
     """Create a new Jitsi meeting and redirect to the meeting page."""
+    if request.method == 'GET':
+        # Render a form or informational page to create a meeting
+        return render_template('create_meeting.html')
+
     try:
         api_url = "https://api.jitsi.me/createConference"
         headers = {
@@ -97,20 +101,20 @@ def create_meeting():
             return redirect(url_for('main.meeting', meeting_id=meeting_id))
         raise ValueError("Meeting ID not returned in response.")
     except (requests.RequestException, ValueError) as e:
+        current_app.logger.error(f"Meeting creation error: {e}")
         flash('Failed to create meeting. Try again later.', 'danger')
-        print(f"Meeting creation error: {e}")
         return redirect(url_for('main.dashboard'))
 
 @main.route('/meeting/<string:meeting_id>')
 @login_required
 def meeting(meeting_id):
-    return render_template('meeting.html', title='Meeting', meeting_id=meeting_id)
+    return render_template('meeting.html', meeting_id=meeting_id)
 
 @main.route('/user/<int:user_id>')
 @login_required
 def user_profile(user_id):
     user = User.query.get_or_404(user_id)
-    return render_template('user_profile.html', title='User Profile', user=user)
+    return render_template('user_profile.html', user=user)
 
 @main.route('/gamification')
 @login_required
@@ -122,7 +126,7 @@ def gamification():
 @main.route('/virtual_classrooms')
 @login_required
 def virtual_classrooms():
-    return render_template('virtual_classrooms.html', title='Virtual Classrooms')
+    return render_template('virtual_classrooms.html')
 
 @main.route('/vr_experience')
 def vr_experience():
@@ -143,12 +147,12 @@ def simulator_scenario():
 @main.route('/notifications')
 @login_required
 def notifications():
-    return render_template('notifications.html', title='Notifications')
+    return render_template('notifications.html')
 
 @main.route('/report')
 @login_required
 def report():
-    return render_template('report.html', title='Reports')
+    return render_template('report.html')
 
 # Error handler
 @main.app_errorhandler(404)

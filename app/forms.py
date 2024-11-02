@@ -1,3 +1,4 @@
+# app/forms.py
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Regexp
@@ -11,8 +12,10 @@ class RegistrationForm(FlaskForm):
         validators=[
             DataRequired(),
             Length(min=8),
-            Regexp('^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]',
-                   message='Password must contain at least one letter and one number.')
+            Regexp(
+                '^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]',
+                message='Password must contain at least one letter and one number.'
+            )
         ]
     )
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])

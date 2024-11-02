@@ -1,0 +1,23 @@
+<!-- create_meeting.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Meeting</title>
+</head>
+<body>
+    <h1>Create a Jitsi Meeting</h1>
+    <form method="POST" action="{{ url_for('create_meeting') }}">
+        <label for="meeting_name">Meeting Name:</label>
+        <input type="text" id="meeting_name" name="meeting_name" required>
+        <button type="submit">Create Meeting</button>
+    </form>
+</body>
+</html>
+<!-- Example usage in a template (e.g., footer section in base.html) -->
+<footer>
+    <div class="container">
+        <p>&copy; {{ current_year() }} Mentor Platform. All rights reserved.</p>
+    </div>
+</footer>

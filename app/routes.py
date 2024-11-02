@@ -7,7 +7,7 @@ from flask import (
 from flask_login import (
     login_user, current_user, logout_user, login_required
 )
-from app import db, bcrypt  # Use the globally initialized instances
+from app import db, bcrypt
 from app.models import User
 from app.forms import LoginForm, RegistrationForm
 
@@ -15,7 +15,7 @@ from app.forms import LoginForm, RegistrationForm
 main = Blueprint('main', __name__)
 
 # Jitsi token from environment variables (secure management)
-JITSI_TOKEN = os.getenv('JITSI_TOKEN', 'your_default_token')
+JITSI_TOKEN = os.getenv('JITSI_TOKEN', 'Please_set_JITSI_TOKEN_in_env')
 
 @main.route('/')
 def home():
@@ -153,3 +153,29 @@ def api_login():
             return jsonify({'error': 'Invalid credentials'}), 401
 
     return jsonify(form.errors), 400
+
+# Additional module routes
+@main.route('/vr_experience')
+def vr_experience():
+    return render_template('vr_experience.html')
+
+@main.route('/gamification')
+def gamification():
+    achievements = [
+        {"title": "Quiz Master", "description": "Completed all quizzes with a high score!"},
+        {"title": "Perfect Attendance", "description": "Attended all sessions in the last month."}
+    ]
+    progress = {"level": 5, "points": 1200}
+    return render_template('gamificacion.html', achievements=achievements, progress=progress)
+
+@main.route('/simulators')
+def simulators():
+    return render_template('simulators.html')
+
+@main.route('/simulator_quiz')
+def simulator_quiz():
+    return render_template('simulator_quiz.html')
+
+@main.route('/simulator_scenario')
+def simulator_scenario():
+    return render_template('simulator_scenario.html')

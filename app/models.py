@@ -1,30 +1,39 @@
-# app/models.py
-from app import db, bcrypt
+from app import db
 from flask_login import UserMixin
 from datetime import datetime
 
 class User(db.Model, UserMixin):
-    __tablename__ = 'user'
-
-    # Primary Key
     id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False, index=True)
+    email = db.Column(db.String(120), unique=True, nullable=False, index=True)
+    password = db.Column(db.String(60), nullable=False)
+    role = db.Column(db.String(20), nullable=False, default='user')  # Role column with default
 
-    # User Information
-    username = db.Column(db.String(150), unique=True, nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
+    def is_admin(self):
+        return self.role == 'admin'
 
-    # Optional Timestamps
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+class MeetingHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    meeting_id = db.Column(db.String(60), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref='meeting_histories', lazy=True)
 
-    def set_password(self, password):
-        """Hashes the password using bcrypt and sets it for the user."""
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+class Achievement(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(255))
+    user = db.relationship('User', backref='achievements', lazy=True)
 
-    def check_password(self, password):
-        """Verifies the hashed password."""
-        return bcrypt.check_password_hash(self.password, password)
+class UserProgress(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    level = db.Column(db.Integer, default=1)
+    points = db.Column(db.Integer, default=0)
+    user = db.relationship('User', backref='progress', lazy=True)
 
-    def __repr__(self):
-        return f'<User {self.username}>'
+    def update_level(self):
+        # Example logic to adjust level based on points
+        self.level = self.points // 100  # Adjust this formula as needed
+        db.session.commit()

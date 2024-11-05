@@ -1,5 +1,6 @@
 import os
-from flask import Flask
+import logging
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -16,6 +17,15 @@ bcrypt = Bcrypt()
 login_manager = LoginManager()
 socketio = SocketIO()
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Directly set up Werkzeug logger to suppress specific static file logs
+werkzeug_logger = logging.getLogger('werkzeug')
+werkzeug_logger.setLevel(logging.INFO)
+
+# Create app function
 def create_app():
     app = Flask(__name__)
     
@@ -37,6 +47,24 @@ def create_app():
     # Register blueprints
     from app.routes import main  # Import your blueprint here
     app.register_blueprint(main)  # Register the main blueprint
+
+    # Suppress logging for static file requests in log_request_info
+    @app.before_request
+    def log_request_info():
+        if request.path.startswith('/static/'):
+            return  # Skip logging for static file requests
+
+        # Log specific actions like login attempts
+        if request.endpoint == 'main.login' and request.method == 'POST':
+            if request.form.get('email'):
+                logger.info(f"Login attempt for email: {request.form['email']}")
+
+    # Example logging when accessing a restricted route
+    @app.after_request
+    def log_dashboard_access(response):
+        if request.endpoint == 'main.dashboard':
+            logger.info("Accessed Dashboard")
+        return response
 
     return app
 

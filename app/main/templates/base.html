@@ -1,37 +1,25 @@
-<!-- app/templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Mentor Platform{% endblock %}</title>
-    <!-- Updated CSS link with versioning parameter to force reload on changes -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}?v=2">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-
-    <!-- Header with Navigation menu -->
     <header>
-        <nav class="navbar">
-            <ul>
-                <li><a href="{{ url_for('main.home') }}">Home</a></li>
-                <li><a href="{{ url_for('main.login') }}">Login</a></li>
-                <li><a href="{{ url_for('main.register') }}">Register</a></li>
-            </ul>
-        </nav>
+        <!-- Header Content Here -->
     </header>
-
-    <!-- Main Content -->
-    <main id="content">
+    
+    <main>
         {% block content %}{% endblock %}
     </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; {{ current_year() }} Mentor Platform. All rights reserved.</p>
-        </div>
-    </footer>
     
+    {% block footer %}
+    <footer>
+        <p>&copy; {{ current_year() }} Mentor Platform. All rights reserved.</p>
+    </footer>
+    {% endblock %}
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

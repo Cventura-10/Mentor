@@ -8,20 +8,29 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <h1 class="text-center mb-4">Login</h1>
-            <form method="POST" action="{{ url_for('main.login') }}" novalidate>
-                {{ form.hidden_tag() }}
 
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} text-center">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('main.login') }}" novalidate>
+                {{ form.hidden_tag() }}  <!-- Includes CSRF token -->
+                
                 <div class="form-group mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    {{ form.email(class_='form-control', id='email', placeholder='Enter your email') }}
+                    {{ form.email.label }}
+                    {{ form.email(class="form-control") }}
                     {% for error in form.email.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    {{ form.password(class_='form-control', id='password', placeholder='Enter your password') }}
+                    {{ form.password.label }}
+                    {{ form.password(class="form-control") }}
                     {% for error in form.password.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}

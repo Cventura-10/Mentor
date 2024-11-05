@@ -1,4 +1,4 @@
-from app import db
+from . import db  # Ensures 'db' is imported from the app package
 from flask_login import UserMixin
 from datetime import datetime
 
@@ -34,5 +34,6 @@ class UserProgress(db.Model):
     user = db.relationship('User', backref='progress', lazy=True)
 
     def update_level(self):
-        self.level = self.points // 100
+        # Example logic to adjust level based on points
+        self.level = self.points // 100  # Adjust this formula as needed
         db.session.commit()

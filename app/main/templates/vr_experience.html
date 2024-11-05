@@ -1,15 +1,14 @@
-<!-- vr_experience.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Virtual Reality Experience</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Virtual Reality Experience{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
     <h1>Virtual Reality Experience</h1>
-    <a-scene>
+    <p>Welcome to the VR experience section. Explore our virtual environment below.</p>
+
+    <!-- VR Scene using A-Frame -->
+    <a-scene embedded style="width: 100%; height: 500px; margin-top: 20px;">
         <a-sky src="{{ url_for('static', filename='vr/sky.jpg') }}"></a-sky>
         <a-box position="0 1 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
         <a-sphere position="2 1 -5" radius="1.25" color="#EF2D5E"></a-sphere>
@@ -17,11 +16,17 @@
         <a-plane position="0 0 -4" rotation="-90 0 0" width="10" height="10" color="#7BC8A4"></a-plane>
         <a-text value="Explore the VR environment" position="-2 2 -2" color="#FFFFFF"></a-text>
     </a-scene>
-</body>
-</html>
-<!-- Example usage in a template (e.g., footer section in base.html) -->
+</div>
+{% endblock %}
+
+{% block footer %}
 <footer>
-    <div class="container">
+    <div class="container text-center">
         <p>&copy; {{ current_year() }} Mentor Platform. All rights reserved.</p>
     </div>
 </footer>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+{% endblock %}

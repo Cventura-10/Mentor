@@ -1,12 +1,11 @@
 import os
 import requests
+from functools import wraps
 from flask import (
     Blueprint, render_template, url_for, flash, redirect, 
-    request, jsonify, session
+    request, jsonify, session, current_app
 )
-from flask_login import (
-    login_user, current_user, logout_user, login_required
-)
+from flask_login import login_user, current_user, logout_user, login_required
 from app import db, bcrypt
 from app.models import User
 from app.forms import LoginForm, RegistrationForm
@@ -63,7 +62,7 @@ def register():
         except Exception as e:
             db.session.rollback()
             flash('Registration failed. Please try again.', 'danger')
-            print(f"Registration error: {e}")
+            current_app.logger.error(f"Registration error: {e}")
 
     return render_template('register.html', title='Register', form=form)
 
@@ -105,7 +104,7 @@ def create_meeting():
 
     except (requests.RequestException, ValueError) as e:
         flash('Failed to create meeting. Try again later.', 'danger')
-        print(f"Meeting creation error: {e}")
+        current_app.logger.error(f"Meeting creation error: {e}")
         return redirect(url_for('main.dashboard'))
 
 @main.route('/meeting/<string:meeting_id>')
@@ -134,7 +133,7 @@ def api_register():
             return jsonify({'message': 'User registered successfully'}), 201
         except Exception as e:
             db.session.rollback()
-            print(f"API registration error: {e}")
+            current_app.logger.error(f"API registration error: {e}")
             return jsonify({'error': 'Registration failed'}), 500
 
     return jsonify(form.errors), 400
@@ -166,7 +165,7 @@ def gamification():
         {"title": "Perfect Attendance", "description": "Attended all sessions in the last month."}
     ]
     progress = {"level": 5, "points": 1200}
-    return render_template('gamificacion.html', achievements=achievements, progress=progress)
+    return render_template('gamification.html', achievements=achievements, progress=progress)
 
 @main.route('/simulators')
 def simulators():
@@ -179,3 +178,29 @@ def simulator_quiz():
 @main.route('/simulator_scenario')
 def simulator_scenario():
     return render_template('simulator_scenario.html')
+@main.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        flash('You are already logged in.', 'info')
+        return redirect(url_for('main.dashboard'))
+    
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            current_app.logger.info(f"User found: {user.email}")
+            if bcrypt.check_password_hash(user.password, form.password.data):
+                login_user(user)
+                flash('Login successful!', 'success')
+                next_page = request.args.get('next') or url_for('main.dashboard')
+                current_app.logger.info("Login successful, redirecting to dashboard")
+                return redirect(next_page)
+            else:
+                flash('Invalid password', 'danger')
+                current_app.logger.warning("Invalid password attempted")
+        else:
+            flash('Invalid email or password', 'danger')
+            current_app.logger.warning("Email not found")
+
+    current_app.logger.info("Rendering login template with form")
+    return render_template('login.html', form=form)

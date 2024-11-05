@@ -1,26 +1,51 @@
-<!-- templates/dashboard.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-</head>
-<body>
-    <h1>Dashboard</h1>
-    <p>Welcome back, {{ current_user.username }}!</p>
-    <ul>
-        <li><a href="{{ url_for('main.virtual_classrooms') }}">Virtual Classrooms</a></li>
-        <li><a href="{{ url_for('main.vr_experience') }}">VR Experiences</a></li>
-        <li><a href="{{ url_for('main.simulators') }}">Simulators</a></li>
-        <li><a href="{{ url_for('main.gamification') }}">Gamification</a></li>
-        <li><a href="{{ url_for('main.notifications') }}">Notifications</a></li>
-        <li><a href="{{ url_for('main.report') }}">Reports</a></li>
-    </ul>
-</body>
-</html>
-<!-- templates/base.html -->
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Welcome to the Dashboard, {{ current_user.username }}</h1>
+    <p>Use the icons below to navigate to different sections of the platform:</p>
+
+    <div class="row mt-4">
+        <div class="col-md-3 text-center">
+            <a href="{{ url_for('main.vr_experience') }}">
+                <i class="fas fa-vr-cardboard fa-3x"></i>
+                <p>VR Experience</p>
+            </a>
+        </div>
+        <div class="col-md-3 text-center">
+            <a href="{{ url_for('main.simulators') }}">
+                <i class="fas fa-cogs fa-3x"></i>
+                <p>Simulators</p>
+            </a>
+        </div>
+        <div class="col-md-3 text-center">
+            <a href="{{ url_for('main.notifications') }}">
+                <i class="fas fa-bell fa-3x"></i>
+                <p>Notifications</p>
+            </a>
+        </div>
+        <div class="col-md-3 text-center">
+            <a href="{{ url_for('main.gamification') }}">
+                <i class="fas fa-medal fa-3x"></i>
+                <p>Gamification</p>
+            </a>
+        </div>
+        <!-- Add more icons as needed -->
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
 <footer>
-    <div class="container">
+    <div class="container text-center">
         <p>&copy; {{ current_year() }} Mentor Platform. All rights reserved.</p>
     </div>
 </footer>
+{% endblock %}
+
+{% block scripts %}
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock %}

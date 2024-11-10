@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Chat Room</h1>
+        <div id="messages" style="max-height: 400px; overflow-y: scroll;"></div>
+        <input type="text" id="messageInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        var socket = io();
+
+        socket.on('message', function(msg) {
+            var messages = document.getElementById('messages');
+            var messageElement = document.createElement('div');
+            messageElement.textContent = msg;
+            messages.appendChild(messageElement);
+        });
+
+        function sendMessage() {
+            var input = document.getElementById('messageInput');
+            socket.send(input.value);
+            input.value = '';
+        }
+    </script>
+</body>
+</html>
+<!-- Example usage in a template (e.g., footer section in base.html) -->
+<footer>
+    <div class="container">
+        <p>&copy; {{ current_year() }} Mentor Platform. All rights reserved.</p>
+    </div>
+</footer>

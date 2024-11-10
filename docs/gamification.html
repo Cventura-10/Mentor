@@ -1,0 +1,32 @@
+<!-- gamificacion.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gamification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Gamification Module</h1>
+    <section>
+        <h2>Achievements</h2>
+        <ul>
+            {% for achievement in achievements %}
+                <li><strong>{{ achievement.title }}</strong>: {{ achievement.description }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+    <section>
+        <h2>Progress</h2>
+        <p>Current Level: {{ progress.level }}</p>
+        <p>Total Points: {{ progress.points }}</p>
+    </section>
+</body>
+</html>
+<!-- Example usage in a template (e.g., footer section in base.html) -->
+<footer>
+    <div class="container">
+        <p>&copy; {{ current_year() }} Mentor Platform. All rights reserved.</p>
+    </div>
+</footer>
+

@@ -1,0 +1,47 @@
+{% block doc %}
+<!DOCTYPE html>
+<html{% block html_attribs %}{% endblock html_attribs %}>
+{%- block html %}
+  <head>
+    {%- block head %}
+    <title>{% block title %}{{ title|default("Untitled") }}{% endblock title %}</title>
+
+    {%- block metas %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {%- endblock metas %}
+
+    {%- block styles %}
+    <!-- Include Bootstrap CSS -->
+    <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
+    {%- endblock styles %}
+    {%- endblock head %}
+  </head>
+  <body{% block body_attribs %}{% endblock body_attribs %}>
+    {% block body %}
+    {% block navbar %}
+    <!-- Add a navbar or leave blank for now -->
+    {%- endblock navbar %}
+
+    {% block content %}
+    <!-- Content goes here -->
+    {%- endblock content %}
+
+    {% block footer %}
+    <!-- Footer Section -->
+    <footer>
+        <div class="container">
+            <p>&copy; {{ current_year() }} Mentor Platform. All rights reserved.</p>
+        </div>
+    </footer>
+    {%- endblock footer %}
+
+    {% block scripts %}
+    <!-- Include jQuery and Bootstrap JS -->
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    {%- endblock scripts %}
+    {%- endblock body %}
+  </body>
+{%- endblock html %}
+</html>
+{% endblock doc %}
